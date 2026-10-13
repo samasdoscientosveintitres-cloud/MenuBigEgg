@@ -1,0 +1,237 @@
+--[[  MenuBigEgg  |  Liquid Glass Panel
+      Para Delta Executor (Roblox movil)
+      Pega todo esto en el editor y dale EXECUTE  ]]
+
+local Players      = game:GetService("Players")
+local UIS          = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Lighting     = game:GetService("Lighting")
+
+local plr = Players.LocalPlayer
+local pg  = plr:WaitForChild("PlayerGui")
+
+local OLD = pg:FindFirstChild("MenuBigEgg")
+if OLD then OLD:Destroy() end
+
+local DATA = {
+	{"Gargoyle", "32.2M kg", "17B"},
+	{"Gargoyle", "12M kg",   "5.4B"},
+	{"Gargoyle", "312k kg",  "1.1B"},
+	{"Gargoyle", "121k kg",  "872M"},
+}
+
+local function new(class, props, parent)
+	local o = Instance.new(class)
+	for k, v in pairs(props or {}) do o[k] = v end
+	if parent then o.Parent = parent end
+	return o
+end
+
+-- ===== GUI =====
+local gui = new("ScreenGui", {
+	Name = "MenuBigEgg", ResetOnSpawn = false,
+	IgnoreGuiInset = true, DisplayOrder = 999,
+	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+}, pg)
+
+local blur = new("BlurEffect", { Size = 0 }, Lighting)
+
+local BALL, W, H, GAP = 62, 330, 332, 16
+
+-- ===== PELOTITA =====
+local ball = new("TextButton", {
+	Parent = gui, Text = "", AutoButtonColor = false,
+	Size = UDim2.fromOffset(BALL, BALL),
+	AnchorPoint = Vector2.new(1, 1),
+	Position = UDim2.new(1, -20, 1, -20),
+	BackgroundColor3 = Color3.fromRGB(230, 250, 255),
+	BackgroundTransparency = 0.22, ZIndex = 6,
+})
+new("UICorner", { CornerRadius = UDim.new(1, 0) }, ball)
+new("UIStroke", { Color = Color3.fromRGB(255,255,255), Thickness = 1.6, Transparency = 0.3 }, ball)
+new("UIGradient", {
+	Rotation = 140,
+	Color = ColorSequence.new(Color3.fromRGB(170,255,225), Color3.fromRGB(150,200,255)),
+}, ball)
+
+local egg = new("Frame", {
+	Parent = ball, BorderSizePixel = 0,
+	AnchorPoint = Vector2.new(.5,.5), Position = UDim2.fromScale(.5,.5),
+	Size = UDim2.fromOffset(20, 26),
+	BackgroundColor3 = Color3.fromRGB(255,255,255),
+}, ball)
+new("UICorner", { CornerRadius = UDim.new(0.5, 0) }, egg)
+
+-- ===== PANEL =====
+local panel = new("Frame", {
+	Parent = gui, Visible = false, ClipsDescendants = true,
+	Size = UDim2.fromOffset(W, H),
+	AnchorPoint = Vector2.new(1, 1),
+	Position = UDim2.new(1, -20, 1, -(20 + BALL + GAP)),
+	BackgroundColor3 = Color3.fromRGB(22, 24, 38),
+	BackgroundTransparency = 0.35, ZIndex = 5,
+})
+new("UICorner", { CornerRadius = UDim.new(0, 22) }, panel)
+new("UIStroke", { Color = Color3.fromRGB(255,255,255), Thickness = 1.5, Transparency = 0.72 }, panel)
+new("UIGradient", {
+	Rotation = 135,
+	Color = ColorSequence.new(Color3.fromRGB(255,255,255), Color3.fromRGB(180,220,255)),
+	Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.05),
+		NumberSequenceKeypoint.new(1, 0.78),
+	}),
+}, panel)
+
+local scale = new("UIScale", { Scale = 0.85 }, panel)
+new("UIPadding", {
+	PaddingTop = UDim.new(0,14), PaddingBottom = UDim.new(0,14),
+	PaddingLeft = UDim.new(0,14), PaddingRight = UDim.new(0,14),
+}, panel)
+
+-- HEADER
+local head = new("Frame", { Parent = panel, BackgroundTransparency = 1, Size = UDim2.new(1,0,0,40) }, panel)
+new("TextLabel", {
+	Parent = head, BackgroundTransparency = 1,
+	Size = UDim2.new(1,-46,1,0), Font = Enum.Font.GothamBold,
+	Text = "MenuBigEgg", TextSize = 17, TextColor3 = Color3.fromRGB(245,250,255),
+	TextXAlignment = Enum.TextXAlignment.Left,
+}, head)
+
+local xBtn = new("TextButton", {
+	Parent = head, Text = "X", Font = Enum.Font.GothamBold, TextSize = 14,
+	TextColor3 = Color3.fromRGB(245,250,255), AutoButtonColor = false,
+	Size = UDim2.fromOffset(34,34), AnchorPoint = Vector2.new(1,.5),
+	Position = UDim2.new(1,0,.5,0),
+	BackgroundColor3 = Color3.fromRGB(255,255,255), BackgroundTransparency = 0.78, ZIndex = 7,
+}, head)
+new("UICorner", { CornerRadius = UDim.new(1,0) }, xBtn)
+new("UIStroke", { Color = Color3.fromRGB(255,255,255), Thickness = 1.2, Transparency = 0.45 }, xBtn)
+
+-- LISTA
+local list = new("Frame", {
+	Parent = panel, BackgroundTransparency = 1,
+	Position = UDim2.fromOffset(0, 48), Size = UDim2.new(1, 0, 0, 4 * 56),
+}, panel)
+new("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }, list)
+
+for i, d in ipairs(DATA) do
+	local row = new("Frame", {
+		Parent = list, LayoutOrder = i, BorderSizePixel = 0,
+		Size = UDim2.new(1, 0, 0, 48),
+		BackgroundColor3 = Color3.fromRGB(255,255,255), BackgroundTransparency = 0.86,
+	}, list)
+	new("UICorner", { CornerRadius = UDim.new(0, 14) }, row)
+	new("UIStroke", { Color = Color3.fromRGB(255,255,255), Thickness = 1, Transparency = 0.78 }, row)
+
+	local av = new("Frame", {
+		Parent = row, BorderSizePixel = 0,
+		Position = UDim2.fromOffset(8, 7), Size = UDim2.fromOffset(34,34),
+		BackgroundColor3 = Color3.fromRGB(215, 250, 240),
+	}, row)
+	new("UICorner", { CornerRadius = UDim.new(1,0) }, av)
+	new("TextLabel", {
+		Parent = av, BackgroundTransparency = 1, Size = UDim2.fromScale(1,1),
+		Text = "G", Font = Enum.Font.GothamBlack, TextSize = 15,
+		TextColor3 = Color3.fromRGB(10, 25, 35),
+	}, av)
+
+	new("TextLabel", {
+		Parent = row, BackgroundTransparency = 1,
+		Position = UDim2.fromOffset(50, 6), Size = UDim2.new(0, 160, 0, 16),
+		Text = d[1], Font = Enum.Font.GothamBold, TextSize = 14,
+		TextColor3 = Color3.fromRGB(248, 251, 255),
+		TextXAlignment = Enum.TextXAlignment.Left,
+	}, row)
+
+	new("TextLabel", {
+		Parent = row, BackgroundTransparency = 1,
+		Position = UDim2.fromOffset(50, 25), Size = UDim2.new(0, 170, 0, 14),
+		Text = d[2] .. "  -  " .. d[3], Font = Enum.Font.GothamMedium, TextSize = 12,
+		TextColor3 = Color3.fromRGB(190, 205, 230),
+		TextXAlignment = Enum.TextXAlignment.Left,
+	}, row)
+
+	local join = new("TextButton", {
+		Parent = row, Text = "JOIN", Font = Enum.Font.GothamBlack, TextSize = 12,
+		TextColor3 = Color3.fromRGB(6, 20, 28), AutoButtonColor = false,
+		Size = UDim2.fromOffset(70, 28), AnchorPoint = Vector2.new(1,.5),
+		Position = UDim2.new(1, -9, .5, 0),
+		BackgroundColor3 = Color3.fromRGB(130, 240, 205),
+	}, row)
+	new("UICorner", { CornerRadius = UDim.new(1,0) }, join)
+	new("UIStroke", { Color = Color3.fromRGB(255,255,255), Thickness = 1, Transparency = 0.4 }, join)
+	new("UIGradient", {
+		Rotation = 140,
+		Color = ColorSequence.new(Color3.fromRGB(140, 250, 210), Color3.fromRGB(150, 200, 255)),
+	}, join)
+
+	join.MouseButton1Down:Connect(function()
+		TweenService:Create(join, TweenInfo.new(.12), { Size = UDim2.fromOffset(64, 26) }):Play()
+	end)
+	join.MouseButton1Up:Connect(function()
+		TweenService:Create(join, TweenInfo.new(.18), { Size = UDim2.fromOffset(70, 28) }):Play()
+	end)
+end
+
+-- FOOTER
+new("TextLabel", {
+	Parent = panel, BackgroundTransparency = 1,
+	AnchorPoint = Vector2.new(.5, 1), Position = UDim2.new(.5, 0, 1, 0),
+	Size = UDim2.new(1, 0, 0, 20),
+	Text = "Conviertete en un top 1 junto a MenuBigEgg",
+	Font = Enum.Font.GothamBold, TextSize = 12,
+	TextColor3 = Color3.fromRGB(225, 235, 250),
+}, panel)
+
+-- ===== ABRIR / CERRAR =====
+local open = false
+
+local function setOpen(v)
+	open = v
+	if v then
+		panel.Visible = true
+		scale.Scale = 0.85
+		TweenService:Create(scale, TweenInfo.new(.34, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		TweenService:Create(panel, TweenInfo.new(.25), { BackgroundTransparency = 0.35 }):Play()
+		TweenService:Create(blur, TweenInfo.new(.3), { Size = 14 }):Play()
+	else
+		TweenService:Create(scale, TweenInfo.new(.22, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Scale = 0.85 }):Play()
+		TweenService:Create(blur, TweenInfo.new(.25), { Size = 0 }):Play()
+		task.delay(0.2, function() if not open then panel.Visible = false end end)
+	end
+end
+
+xBtn.MouseButton1Click:Connect(function() setOpen(false) end)
+
+-- ===== ARRASTRAR PELOTITA =====
+local dragging, dragStart, startPos, moved = false, nil, nil, false
+
+ball.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch
+	or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging, moved = true, false
+		dragStart, startPos = input.Position, ball.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+				if not moved then setOpen(not open) end
+			end
+		end)
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if not dragging then return end
+	if input.UserInputType == Enum.UserInputType.Touch
+	or input.UserInputType == Enum.UserInputType.MouseMovement then
+		local d = input.Position - dragStart
+		if d.Magnitude > 8 then moved = true end
+		local nx = startPos.X.Offset + d.X
+		local ny = startPos.Y.Offset + d.Y
+		ball.Position  = UDim2.new(1, nx, 1, ny)
+		panel.Position = UDim2.new(1, nx, 1, ny - (BALL + GAP))
+	end
+end)
+
+setOpen(false)
+print("[MenuBigEgg] cargado")
